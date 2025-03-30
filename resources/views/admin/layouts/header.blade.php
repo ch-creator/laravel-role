@@ -9,7 +9,7 @@
             </a>
         @else
             <a href="{{ route('dashboard') }}" class="logo">
-                <img src="/assets/admin/img/logo-def.png" alt="Logo">
+                <img src="{{ asset('public/assets/admin/img/logo-def.png') }}" alt="Logo">
             </a>
         @endif
 
@@ -19,7 +19,7 @@
             </a>
         @else
             <a href="{{ route('dashboard') }}" class="logo logo-small">
-                <img src="/assets/admin/img/favicon-def.png" alt="Logo" width="30" height="30">
+                <img src="{{ asset('public/assets/admin/img/favicon-def.png') }}" alt="Logo" width="30" height="30">
             </a>
         @endif
     </div>
@@ -69,7 +69,7 @@
                             <a href="#">
                                 <div class="media">
                                     <span class="avatar avatar-sm">
-                                        <img class="avatar-img rounded-circle" alt="User Image" src="/assets/admin/img/patients/patient3.jpg">
+                                        <img class="avatar-img rounded-circle" alt="User Image" src="{{ asset('public/assets/admin/img/patients/patient3.jpg') }}">
                                     </span>
                                     <div class="media-body">
                                         <p class="noti-details"><span class="noti-title">Carl Kelly</span> send a message <span class="noti-title"> to his doctor</span></p>
@@ -91,7 +91,7 @@
         <li class="nav-item dropdown has-arrow">
             <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
                 <span class="user-img">
-                    <img class="rounded-circle" src="{{ Auth::user()->image }}" onerror="this.src='{{ asset('assets/admin/img/default-user.png') }}';" width="31" alt="{{auth()->user()->name}}">
+                    <img class="rounded-circle" src="{{ Auth::user()->image }}" onerror="this.src='{{ asset('public/assets/admin/img/default-user.png') }}';" width="31" alt="{{auth()->user()->name}}">
                 </span>
             </a>
             <div class="dropdown-menu">

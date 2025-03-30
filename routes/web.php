@@ -21,7 +21,7 @@ Route::get('setlocale/{locale}', function ($lang) {
 
 
 // Frontend Routes
-Route::get('/', 					[App\Http\Controllers\Frontend\HomeController::class, 'index'])->name('home');
+Route::get('/',[App\Http\Controllers\Frontend\HomeController::class, 'index'])->name('home');
 
 
 

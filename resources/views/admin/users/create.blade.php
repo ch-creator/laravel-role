@@ -46,7 +46,7 @@
             <div class="row">
                 <div class="col-md-4 col-sm-12" style="margin: auto;">
                     <div class="input-group mb-5">
-                            <img src="" alt="..." id="output" class="img-thumbnail rounded mx-auto d-block mb-3" onerror="this.src='{{ asset('assets/admin/img/default-user.png') }}';">
+                            <img src="" alt="..." id="output" class="img-thumbnail rounded mx-auto d-block mb-3" onerror="this.src='{{ asset('public/assets/admin/img/default-user.png') }}';">
 
                         <input type="text" hidden id="image1" class="form-control" name="image">
                         <div class="input-group-append" style="width: 100%;">

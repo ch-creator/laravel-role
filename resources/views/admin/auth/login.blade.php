@@ -17,13 +17,13 @@
         @endif
 
         <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="/assets/admin/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ asset('public') }}/assets/admin/css/bootstrap.min.css">
         <!-- Fontawesome CSS -->
-        <link rel="stylesheet" href="/assets/admin/css/font-awesome.min.css">
+        <link rel="stylesheet" href="{{ asset('public/assets/admin/css/font-awesome.min.css') }}">
         <!-- toastr CSS -->
-        <link rel="stylesheet" href="{{ asset('assets/admin/css/toastr.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('public/assets/admin/css/toastr.min.css') }}">
         <!-- Main CSS -->
-        <link rel="stylesheet" href="/assets/admin/css/style.css">    
+        <link rel="stylesheet" href="{{ asset('public/assets/admin/css/style.css') }}">    
     </head>
     <body>
     
@@ -37,7 +37,7 @@
                             @if($setting->website_logo_light != null || !empty($setting->website_logo_light))
                                 <img class="img-fluid" src="{{$setting->website_logo_light}}" alt="{{$setting->website_title}}">
                             @else
-                                <img class="img-fluid" src="/assets/admin/img/logo-def.png" alt="Logo">
+                                <img class="img-fluid" src="{{ asset('public/assets/admin/img/logo-def.png') }}" alt="Logo">
                             @endif
                         </div>
 
@@ -89,13 +89,13 @@
         </div> <!-- /Main Wrapper -->
         
         <!-- jQuery -->
-        <script src="/assets/admin/js/jquery-3.2.1.min.js"></script>
-        <script src="/assets/admin/js/popper.min.js"></script>
-        <script src="/assets/admin/js/bootstrap.min.js"></script>
+        <script src="{{ asset('public/assets/admin/js/jquery-3.2.1.min.js') }}"></script>
+        <script src="{{ asset('public/assets/admin/js/popper.min.js') }}"></script>
+        <script src="{{ asset('public/assets/admin/js/bootstrap.min.js') }}"></script>
         <!-- Custom JS -->
-        <script src="/assets/admin/js/script.js"></script> 
+        <script src="{{ asset('public/assets/admin/js/script.js') }}"></script> 
         <!-- toastr JS -->
-        <script src="{{ asset('assets/admin/js/toastr.min.js') }}"></script>
+        <script src="{{ asset('public/assets/admin/js/toastr.min.js') }}"></script>
         {!! Toastr::message() !!}
     </body>
 </html>

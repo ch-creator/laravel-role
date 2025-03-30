@@ -24,7 +24,7 @@
 </div>
 
 <!-- File manager -->
-<script src="{{ asset('vendor/file-manager/js/file-manager.js') }}"></script>
+<script src="{{ asset('public/vendor/file-manager/js/file-manager.js') }}"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // set fm height

@@ -103,11 +103,13 @@ class UserController extends Controller
                 })
 
                 ->addColumn('image', function($row){
-                    if ($row->image == null or empty($row->image)) {
-                    	$image = '<img src="/assets/admin/img/default-user.png" class="w-50 rounded-circle img-fluid img-thumbnail" style="max-width: 50px;">';
-                    }else{
-                    	$image = '<img src="'.$row->image.'" class="w-50 rounded-circle img-fluid img-thumbnail" style="max-width: 60px; height: 45px;">';
-                    }
+                    if (empty($row->image)) {
+						// Use the asset() function to generate the URL for the default image
+						$image = '<img src="' . asset('public/assets/admin/img/default-user.png') . '" class="w-50 rounded-circle img-fluid img-thumbnail" style="max-width: 50px;">';
+					} else {
+						// Assuming $row->image contains a valid URL or path to the image
+						$image = '<img src="' . asset($row->image) . '" class="w-50 rounded-circle img-fluid img-thumbnail" style="max-width: 60px; height: 45px;">';
+					}
                     return $image;
                 })
 
