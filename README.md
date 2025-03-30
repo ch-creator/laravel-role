@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <p align="center"><a href="https://docs.google.com/spreadsheets/d/10W31p2Vcd0jOxa6pWxibEGVr1fPzakDS3ctT-EirAUc/edit?usp=sharing" target="_blank">Role-based-laravel-admin-dashboard-version-8.0</a></p>
 
 ## About Laravel Template Admin Panel
@@ -69,3 +70,7 @@ To see the progress report of this project, [Project report](https://docs.google
 8. Now open your browser and go to your domain and ENJOY.
     
     
+=======
+# laravel-role
+This is the repository maintained for the laravel multiple role based admin panel
+>>>>>>> 8fe346de2cbe6daf2ac7a0798a0bffe08ff3b1d4
