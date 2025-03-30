@@ -6,7 +6,6 @@ use ErrorException;
 use FilesystemIterator;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\LazyCollection;
-use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 use RuntimeException;
 use SplFileObject;
@@ -16,7 +15,7 @@ use Symfony\Component\Mime\MimeTypes;
 
 class Filesystem
 {
-    use Conditionable, Macroable;
+    use Macroable;
 
     /**
      * Determine if a file or directory exists.
@@ -56,21 +55,6 @@ class Filesystem
         }
 
         throw new FileNotFoundException("File does not exist at path {$path}.");
-    }
-
-    /**
-     * Get the contents of a file as decoded JSON.
-     *
-     * @param  string  $path
-     * @param  int  $flags
-     * @param  bool  $lock
-     * @return array
-     *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    public function json($path, $flags = 0, $lock = false)
-    {
-        return json_decode($this->get($path, $lock), true, 512, $flags);
     }
 
     /**
@@ -168,7 +152,7 @@ class Filesystem
             );
         }
 
-        return new LazyCollection(function () use ($path) {
+        return LazyCollection::make(function () use ($path) {
             $file = new SplFileObject($path);
 
             $file->setFlags(SplFileObject::DROP_NEW_LINE);
@@ -180,15 +164,14 @@ class Filesystem
     }
 
     /**
-     * Get the hash of the file at the given path.
+     * Get the MD5 hash of the file at the given path.
      *
      * @param  string  $path
-     * @param  string  $algorithm
-     * @return string|false
+     * @return string
      */
-    public function hash($path, $algorithm = 'md5')
+    public function hash($path)
     {
-        return hash_file($algorithm, $path);
+        return md5_file($path);
     }
 
     /**
@@ -209,10 +192,9 @@ class Filesystem
      *
      * @param  string  $path
      * @param  string  $content
-     * @param  int|null  $mode
      * @return void
      */
-    public function replace($path, $content, $mode = null)
+    public function replace($path, $content)
     {
         // If the path already exists and is a symlink, get the real path...
         clearstatcache(true, $path);
@@ -222,11 +204,7 @@ class Filesystem
         $tempPath = tempnam(dirname($path), basename($path));
 
         // Fix permissions of tempPath because `tempnam()` creates it with permissions set to 0600...
-        if (! is_null($mode)) {
-            chmod($tempPath, $mode);
-        } else {
-            chmod($tempPath, 0777 - umask());
-        }
+        chmod($tempPath, 0777 - umask());
 
         file_put_contents($tempPath, $content);
 
@@ -267,12 +245,11 @@ class Filesystem
      *
      * @param  string  $path
      * @param  string  $data
-     * @param  bool  $lock
      * @return int
      */
-    public function append($path, $data, $lock = false)
+    public function append($path, $data)
     {
-        return file_put_contents($path, $data, FILE_APPEND | ($lock ? LOCK_EX : 0));
+        return file_put_contents($path, $data, FILE_APPEND);
     }
 
     /**
@@ -310,7 +287,7 @@ class Filesystem
                 } else {
                     $success = false;
                 }
-            } catch (ErrorException) {
+            } catch (ErrorException $e) {
                 $success = false;
             }
         }
@@ -347,16 +324,12 @@ class Filesystem
      *
      * @param  string  $target
      * @param  string  $link
-     * @return bool|null
+     * @return void
      */
     public function link($target, $link)
     {
         if (! windows_os()) {
-            if (function_exists('symlink')) {
-                return symlink($target, $link);
-            } else {
-                return exec('ln -s '.escapeshellarg($target).' '.escapeshellarg($link)) !== false;
-            }
+            return symlink($target, $link);
         }
 
         $mode = $this->isDirectory($target) ? 'J' : 'H';
@@ -383,7 +356,7 @@ class Filesystem
 
         $relativeTarget = (new SymfonyFilesystem)->makePathRelative($target, dirname($link));
 
-        $this->link($this->isFile($target) ? rtrim($relativeTarget, '/') : $relativeTarget, $link);
+        $this->link($relativeTarget, $link);
     }
 
     /**
@@ -505,18 +478,6 @@ class Filesystem
     }
 
     /**
-     * Determine if the given path is a directory that does not contain any other files or directories.
-     *
-     * @param  string  $directory
-     * @param  bool  $ignoreDotFiles
-     * @return bool
-     */
-    public function isEmptyDirectory($directory, $ignoreDotFiles = false)
-    {
-        return ! Finder::create()->ignoreDotFiles($ignoreDotFiles)->in($directory)->depth(0)->hasResults();
-    }
-
-    /**
      * Determine if the given path is readable.
      *
      * @param  string  $path
@@ -536,20 +497,6 @@ class Filesystem
     public function isWritable($path)
     {
         return is_writable($path);
-    }
-
-    /**
-     * Determine if two files are the same by comparing their hashes.
-     *
-     * @param  string  $firstFile
-     * @param  string  $secondFile
-     * @return bool
-     */
-    public function hasSameHash($firstFile, $secondFile)
-    {
-        $hash = @hash_file('xxh128', $firstFile);
-
-        return $hash && hash_equals($hash, (string) @hash_file('xxh128', $secondFile));
     }
 
     /**
@@ -712,8 +659,10 @@ class Filesystem
             // If the current items is just a regular file, we will just copy this to the new
             // location and keep looping. If for some reason the copy fails we'll bail out
             // and return false, so the developer is aware that the copy process failed.
-            elseif (! $this->copy($item->getPathname(), $target)) {
-                return false;
+            else {
+                if (! $this->copy($item->getPathname(), $target)) {
+                    return false;
+                }
             }
         }
 
@@ -752,8 +701,6 @@ class Filesystem
                 $this->delete($item->getPathname());
             }
         }
-
-        unset($items);
 
         if (! $preserve) {
             @rmdir($directory);

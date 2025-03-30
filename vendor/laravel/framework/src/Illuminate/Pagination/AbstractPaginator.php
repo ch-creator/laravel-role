@@ -6,26 +6,21 @@ use Closure;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ForwardsCalls;
 use Illuminate\Support\Traits\Tappable;
-use Stringable;
-use Traversable;
 
 /**
- * @template TKey of array-key
- *
- * @template-covariant TValue
- *
- * @mixin \Illuminate\Support\Collection<TKey, TValue>
+ * @mixin \Illuminate\Support\Collection
  */
-abstract class AbstractPaginator implements Htmlable, Stringable
+abstract class AbstractPaginator implements Htmlable
 {
     use ForwardsCalls, Tappable;
 
     /**
      * All of the items being paginated.
      *
-     * @var \Illuminate\Support\Collection<TKey, TValue>
+     * @var \Illuminate\Support\Collection
      */
     protected $items;
 
@@ -159,9 +154,9 @@ abstract class AbstractPaginator implements Htmlable, Stringable
      */
     public function getUrlRange($start, $end)
     {
-        return Collection::range($start, $end)
-            ->mapWithKeys(fn ($page) => [$page => $this->url($page)])
-            ->all();
+        return collect(range($start, $end))->mapWithKeys(function ($page) {
+            return [$page => $this->url($page)];
+        })->all();
     }
 
     /**
@@ -186,7 +181,7 @@ abstract class AbstractPaginator implements Htmlable, Stringable
         }
 
         return $this->path()
-                        .(str_contains($this->path(), '?') ? '&' : '?')
+                        .(Str::contains($this->path(), '?') ? '&' : '?')
                         .Arr::query($parameters)
                         .$this->buildFragment();
     }
@@ -314,7 +309,7 @@ abstract class AbstractPaginator implements Htmlable, Stringable
     /**
      * Get the slice of items being paginated.
      *
-     * @return array<TKey, TValue>
+     * @return array
      */
     public function items()
     {
@@ -324,7 +319,7 @@ abstract class AbstractPaginator implements Htmlable, Stringable
     /**
      * Get the number of the first item in the slice.
      *
-     * @return int|null
+     * @return int
      */
     public function firstItem()
     {
@@ -334,7 +329,7 @@ abstract class AbstractPaginator implements Htmlable, Stringable
     /**
      * Get the number of the last item in the slice.
      *
-     * @return int|null
+     * @return int
      */
     public function lastItem()
     {
@@ -614,7 +609,8 @@ abstract class AbstractPaginator implements Htmlable, Stringable
      */
     public static function useBootstrap()
     {
-        static::useBootstrapFour();
+        static::defaultView('pagination::bootstrap-4');
+        static::defaultSimpleView('pagination::simple-bootstrap-4');
     }
 
     /**
@@ -629,33 +625,12 @@ abstract class AbstractPaginator implements Htmlable, Stringable
     }
 
     /**
-     * Indicate that Bootstrap 4 styling should be used for generated links.
-     *
-     * @return void
-     */
-    public static function useBootstrapFour()
-    {
-        static::defaultView('pagination::bootstrap-4');
-        static::defaultSimpleView('pagination::simple-bootstrap-4');
-    }
-
-    /**
-     * Indicate that Bootstrap 5 styling should be used for generated links.
-     *
-     * @return void
-     */
-    public static function useBootstrapFive()
-    {
-        static::defaultView('pagination::bootstrap-5');
-        static::defaultSimpleView('pagination::simple-bootstrap-5');
-    }
-
-    /**
      * Get an iterator for the items.
      *
-     * @return \ArrayIterator<TKey, TValue>
+     * @return \ArrayIterator
      */
-    public function getIterator(): Traversable
+    #[\ReturnTypeWillChange]
+    public function getIterator()
     {
         return $this->items->getIterator();
     }
@@ -685,7 +660,8 @@ abstract class AbstractPaginator implements Htmlable, Stringable
      *
      * @return int
      */
-    public function count(): int
+    #[\ReturnTypeWillChange]
+    public function count()
     {
         return $this->items->count();
     }
@@ -693,7 +669,7 @@ abstract class AbstractPaginator implements Htmlable, Stringable
     /**
      * Get the paginator's underlying collection.
      *
-     * @return \Illuminate\Support\Collection<TKey, TValue>
+     * @return \Illuminate\Support\Collection
      */
     public function getCollection()
     {
@@ -703,7 +679,7 @@ abstract class AbstractPaginator implements Htmlable, Stringable
     /**
      * Set the paginator's underlying collection.
      *
-     * @param  \Illuminate\Support\Collection<TKey, TValue>  $collection
+     * @param  \Illuminate\Support\Collection  $collection
      * @return $this
      */
     public function setCollection(Collection $collection)
@@ -726,10 +702,11 @@ abstract class AbstractPaginator implements Htmlable, Stringable
     /**
      * Determine if the given item exists.
      *
-     * @param  TKey  $key
+     * @param  mixed  $key
      * @return bool
      */
-    public function offsetExists($key): bool
+    #[\ReturnTypeWillChange]
+    public function offsetExists($key)
     {
         return $this->items->has($key);
     }
@@ -737,10 +714,11 @@ abstract class AbstractPaginator implements Htmlable, Stringable
     /**
      * Get the item at the given offset.
      *
-     * @param  TKey  $key
-     * @return TValue|null
+     * @param  mixed  $key
+     * @return mixed
      */
-    public function offsetGet($key): mixed
+    #[\ReturnTypeWillChange]
+    public function offsetGet($key)
     {
         return $this->items->get($key);
     }
@@ -748,11 +726,12 @@ abstract class AbstractPaginator implements Htmlable, Stringable
     /**
      * Set the item at the given offset.
      *
-     * @param  TKey|null  $key
-     * @param  TValue  $value
+     * @param  mixed  $key
+     * @param  mixed  $value
      * @return void
      */
-    public function offsetSet($key, $value): void
+    #[\ReturnTypeWillChange]
+    public function offsetSet($key, $value)
     {
         $this->items->put($key, $value);
     }
@@ -760,10 +739,11 @@ abstract class AbstractPaginator implements Htmlable, Stringable
     /**
      * Unset the item at the given key.
      *
-     * @param  TKey  $key
+     * @param  mixed  $key
      * @return void
      */
-    public function offsetUnset($key): void
+    #[\ReturnTypeWillChange]
+    public function offsetUnset($key)
     {
         $this->items->forget($key);
     }

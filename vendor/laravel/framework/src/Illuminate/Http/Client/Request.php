@@ -4,7 +4,7 @@ namespace Illuminate\Http\Client;
 
 use ArrayAccess;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 use LogicException;
 
@@ -147,7 +147,7 @@ class Request implements ArrayAccess
             return false;
         }
 
-        return (new Collection($this->data))->reject(function ($file) use ($name, $value, $filename) {
+        return collect($this->data)->reject(function ($file) use ($name, $value, $filename) {
             return $file['name'] != $name ||
                 ($value && $file['contents'] != $value) ||
                 ($filename && $file['filename'] != $filename);
@@ -194,7 +194,7 @@ class Request implements ArrayAccess
     protected function json()
     {
         if (! $this->data) {
-            $this->data = json_decode($this->body(), true) ?? [];
+            $this->data = json_decode($this->body(), true);
         }
 
         return $this->data;
@@ -218,7 +218,7 @@ class Request implements ArrayAccess
     public function isJson()
     {
         return $this->hasHeader('Content-Type') &&
-               str_contains($this->header('Content-Type')[0], 'json');
+               Str::contains($this->header('Content-Type')[0], 'json');
     }
 
     /**
@@ -229,7 +229,7 @@ class Request implements ArrayAccess
     public function isMultipart()
     {
         return $this->hasHeader('Content-Type') &&
-               str_contains($this->header('Content-Type')[0], 'multipart');
+               Str::contains($this->header('Content-Type')[0], 'multipart');
     }
 
     /**
@@ -261,7 +261,8 @@ class Request implements ArrayAccess
      * @param  string  $offset
      * @return bool
      */
-    public function offsetExists($offset): bool
+    #[\ReturnTypeWillChange]
+    public function offsetExists($offset)
     {
         return isset($this->data()[$offset]);
     }
@@ -272,7 +273,8 @@ class Request implements ArrayAccess
      * @param  string  $offset
      * @return mixed
      */
-    public function offsetGet($offset): mixed
+    #[\ReturnTypeWillChange]
+    public function offsetGet($offset)
     {
         return $this->data()[$offset];
     }
@@ -286,7 +288,8 @@ class Request implements ArrayAccess
      *
      * @throws \LogicException
      */
-    public function offsetSet($offset, $value): void
+    #[\ReturnTypeWillChange]
+    public function offsetSet($offset, $value)
     {
         throw new LogicException('Request data may not be mutated using array access.');
     }
@@ -299,7 +302,8 @@ class Request implements ArrayAccess
      *
      * @throws \LogicException
      */
-    public function offsetUnset($offset): void
+    #[\ReturnTypeWillChange]
+    public function offsetUnset($offset)
     {
         throw new LogicException('Request data may not be mutated using array access.');
     }

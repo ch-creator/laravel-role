@@ -4,9 +4,7 @@ namespace Laravel\Ui;
 
 use Illuminate\Console\Command;
 use InvalidArgumentException;
-use Symfony\Component\Console\Attribute\AsCommand;
 
-#[AsCommand(name: 'ui')]
 class UiCommand extends Command
 {
     /**
@@ -43,11 +41,11 @@ class UiCommand extends Command
             throw new InvalidArgumentException('Invalid preset.');
         }
 
+        $this->{$this->argument('type')}();
+
         if ($this->option('auth')) {
             $this->call('ui:auth');
         }
-
-        $this->{$this->argument('type')}();
     }
 
     /**
@@ -59,8 +57,8 @@ class UiCommand extends Command
     {
         Presets\Bootstrap::install();
 
-        $this->components->info('Bootstrap scaffolding installed successfully.');
-        $this->components->warn('Please run [npm install && npm run dev] to compile your fresh scaffolding.');
+        $this->info('Bootstrap scaffolding installed successfully.');
+        $this->comment('Please run "npm install && npm run dev" to compile your fresh scaffolding.');
     }
 
     /**
@@ -73,8 +71,8 @@ class UiCommand extends Command
         Presets\Bootstrap::install();
         Presets\Vue::install();
 
-        $this->components->info('Vue scaffolding installed successfully.');
-        $this->components->warn('Please run [npm install && npm run dev] to compile your fresh scaffolding.');
+        $this->info('Vue scaffolding installed successfully.');
+        $this->comment('Please run "npm install && npm run dev" to compile your fresh scaffolding.');
     }
 
     /**
@@ -87,7 +85,7 @@ class UiCommand extends Command
         Presets\Bootstrap::install();
         Presets\React::install();
 
-        $this->components->info('React scaffolding installed successfully.');
-        $this->components->warn('Please run [npm install && npm run dev] to compile your fresh scaffolding.');
+        $this->info('React scaffolding installed successfully.');
+        $this->comment('Please run "npm install && npm run dev" to compile your fresh scaffolding.');
     }
 }

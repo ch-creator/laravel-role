@@ -4,8 +4,6 @@ namespace Illuminate\Foundation;
 
 use Exception;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Env;
 
 class PackageManifest
 {
@@ -57,7 +55,7 @@ class PackageManifest
         $this->files = $files;
         $this->basePath = $basePath;
         $this->manifestPath = $manifestPath;
-        $this->vendorPath = Env::get('COMPOSER_VENDOR_DIR') ?: $basePath.'/vendor';
+        $this->vendorPath = $basePath.'/vendor';
     }
 
     /**
@@ -88,7 +86,7 @@ class PackageManifest
      */
     public function config($key)
     {
-        return (new Collection($this->getManifest()))->flatMap(function ($configuration) use ($key) {
+        return collect($this->getManifest())->flatMap(function ($configuration) use ($key) {
             return (array) ($configuration[$key] ?? []);
         })->filter()->all();
     }
@@ -129,7 +127,7 @@ class PackageManifest
 
         $ignoreAll = in_array('*', $ignore = $this->packagesToIgnore());
 
-        $this->write((new Collection($packages))->mapWithKeys(function ($package) {
+        $this->write(collect($packages)->mapWithKeys(function ($package) {
             return [$this->format($package['name']) => $package['extra']['laravel'] ?? []];
         })->each(function ($configuration) use (&$ignore) {
             $ignore = array_merge($ignore, $configuration['dont-discover'] ?? []);

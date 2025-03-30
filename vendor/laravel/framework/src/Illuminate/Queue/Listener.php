@@ -3,10 +3,8 @@
 namespace Illuminate\Queue;
 
 use Closure;
+use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
-
-use function Illuminate\Support\artisan_binary;
-use function Illuminate\Support\php_binary;
 
 class Listener
 {
@@ -32,7 +30,7 @@ class Listener
     protected $sleep = 3;
 
     /**
-     * The number of times to try a job before logging it failed.
+     * The amount of times to try a job before logging it failed.
      *
      * @var int
      */
@@ -63,7 +61,7 @@ class Listener
      */
     protected function phpBinary()
     {
-        return php_binary();
+        return (new PhpExecutableFinder)->find(false);
     }
 
     /**
@@ -73,7 +71,7 @@ class Listener
      */
     protected function artisanBinary()
     {
-        return artisan_binary();
+        return defined('ARTISAN_BINARY') ? ARTISAN_BINARY : 'artisan';
     }
 
     /**
@@ -90,10 +88,6 @@ class Listener
 
         while (true) {
             $this->runProcess($process, $options->memory);
-
-            if ($options->rest) {
-                sleep($options->rest);
-            }
         }
     }
 
@@ -163,7 +157,6 @@ class Listener
             "--memory={$options->memory}",
             "--sleep={$options->sleep}",
             "--tries={$options->maxTries}",
-            $options->force ? '--force' : null,
         ], function ($value) {
             return ! is_null($value);
         });
@@ -218,7 +211,7 @@ class Listener
     /**
      * Stop listening and bail out of the script.
      *
-     * @return never
+     * @return void
      */
     public function stop()
     {
